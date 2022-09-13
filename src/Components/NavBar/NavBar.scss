@@ -1,0 +1,58 @@
+
+.navBarStyle{
+    background-color: black;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: outset;
+    img{
+        width: 127px;
+        margin: 7px;
+    }
+    ul{
+        display:flex;
+        justify-content: center;
+        list-style: none;
+        background-color: black;
+        a{
+            text-decoration:none;
+            margin-top: 10px;
+        }
+        ul{
+            margin:10px;
+            button{
+                border: none;
+                background: none;
+                color: white;
+                font-size: 17px;
+                margin: 11px;
+                cursor: pointer;
+                &:hover{
+                    color: grey;
+                }
+            }
+        }
+    }
+   
+}
+
+
+
+.logIn{
+    font-size: 16px;
+    margin: 10px;
+    border-radius: 15px;
+    box-shadow: 0px 0px 6px 2px;
+    padding: 9px;
+    background-color: black;
+    color: white;
+    margin-right: 77px;
+    cursor: pointer;
+    &:hover{
+        color: grey;
+        box-shadow: none;
+    }
+}
+
+
+

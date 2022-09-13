@@ -15,8 +15,6 @@ const firebaseConfig = {
     measurementId: "G-88N35MC51Q"
 };
 
-
-
 firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();

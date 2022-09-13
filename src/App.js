@@ -1,41 +1,67 @@
-import './App.scss';
-import NavBar from './Components/NavBar/NavBar';
-import {BrowserRouter, Routes, Route} from "react-router-dom"
-import firebase from "./Config/Config";
-import Home from "./pages/Home"
-import Contacto from "./pages/Contacto"
-import Productos from "./pages/Productos"
-import Nosotros from "./pages/Nosotros"
-import Detalle from "./pages/Detalle"
-import Checkout from "./pages/Checkout"
-import ItemListContainer from './Components/ItemListContainer/ItemListContainer';
-import CartProvider from './Components/Context/CartContext';
+import React, { Component } from 'react'
+import { ProductsContextProvider } from './utils/ProductsContext'
+import { Home } from './Components/Home'
+import { BrowserRouter, Switch, Route } from 'react-router-dom'
+import { Signup } from './Components/Signup'
+import { Login } from './Components/Login'
+import { NotFound } from './Components/NotFound'
+import { auth, db } from './Config/Config'
+import { CartContextProvider } from './utils/CartContext'
+import { Cart } from './Components/Cart'
+import { AddProducts } from './Components/AddProducts'
+import { Cashout } from './Components/Cashout'
 
-function App() {
+export class App extends Component {
 
-  firebase.auth().onAuthStateChanged(user =>{
-    console.log(user);
-  })
+    state = {
+        user: null,
+    }
 
-  return (
-    <CartProvider>
-      <BrowserRouter>
-        <div className="App">
-          <NavBar />
-          <Routes>
-            <Route path="/" element={<Home/>}/>
-            <Route path="/contacto" element={<Contacto/>}/>
-            <Route path="/productos" element={<Productos/>}/>
-            <Route path="/category/:categoryid" element={<ItemListContainer/>}/>
-            <Route path="/nosotros" element={<Nosotros/>}/>
-            <Route path="/productos/:id" element={<Detalle/>}/>
-            <Route path="/cart" element={<Checkout/>}/>
-            <Route path="*" element={<h1>ERROR 404 - PAGINA NO ENCONTRADA</h1>}/>
-          </Routes>
-        </div>
-      </BrowserRouter>
-    </CartProvider>
-  );
+    componentDidMount() {
+
+        // getting user info for navigation bar
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                db.collection('SignedUpUsersData').doc(user.uid).get().then(snapshot => {
+                    this.setState({
+                        user: snapshot.data().Name
+                    })
+                })
+            }
+            else {
+                this.setState({
+                    user: null
+                })
+            }
+        })
+
+    }
+
+    render() {
+        return (
+            <ProductsContextProvider>
+                <CartContextProvider>
+                    <BrowserRouter>
+                        <Switch>
+                            {/* home */}
+                            <Route exact path='/' component={() => <Home user={this.state.user} />} />
+                            {/* signup */}
+                            <Route path="/signup" component={Signup} />
+                            {/* login */}
+                            <Route path="/login" component={Login} />
+                            {/* cart products */}
+                            <Route path="/cartproducts" component={() => <Cart user={this.state.user} />} />
+                            {/* add products */}
+                            <Route path="/addproducts" component={AddProducts} />
+                            {/* cashout */}
+                            <Route path='/cashout' component={() => <Cashout user={this.state.user} />} />
+                            <Route component={NotFound} />
+                        </Switch>
+                    </BrowserRouter>
+                </CartContextProvider>
+            </ProductsContextProvider>
+        )
+    }
 }
 
-export default App;
+export default App

@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { AiOutlineUser, AiOutlineShoppingCart } from "react-icons/ai";
-import { useCarritoContext } from "../contexts/carritoContext";
+import { useCarritoContext } from "../Context/carritoContext";
 
 function Layout({ children }) {
   const { carrito } = useCarritoContext();

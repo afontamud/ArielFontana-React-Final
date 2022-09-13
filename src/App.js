@@ -1,67 +1,35 @@
-import React, { Component } from 'react'
-import { ProductsContextProvider } from './utils/ProductsContext'
-import { Home } from './Components/Home'
-import { BrowserRouter, Switch, Route } from 'react-router-dom'
-import { Signup } from './Components/Signup'
-import { Login } from './Components/Login'
-import { NotFound } from './Components/NotFound'
-import { auth, db } from './Config/Config'
-import { CartContextProvider } from './utils/CartContext'
-import { Cart } from './Components/Cart'
-import { AddProducts } from './Components/AddProducts'
-import { Cashout } from './Components/Cashout'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {
+  Home,
+  Producto,
+  Perfil,
+  Carrito,
+  Checkout,
+  Login,
+  NotFound,
+} from "./views";
+import { auth } from "./firebase/credenciales";
+import { useUserContext } from "./contexts/userContext";
+import { onAuthStateChanged } from "firebase/auth";
 
-export class App extends Component {
+function App() {
+  const { user, setUser } = useUserContext();
+  onAuthStateChanged(auth, (firebaseUser) => {
+    if (firebaseUser) setUser(firebaseUser);
+    if (!firebaseUser) setUser(null);
+  });
 
-    state = {
-        user: null,
-    }
-
-    componentDidMount() {
-
-        // getting user info for navigation bar
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                db.collection('SignedUpUsersData').doc(user.uid).get().then(snapshot => {
-                    this.setState({
-                        user: snapshot.data().Name
-                    })
-                })
-            }
-            else {
-                this.setState({
-                    user: null
-                })
-            }
-        })
-
-    }
-
-    render() {
-        return (
-            <ProductsContextProvider>
-                <CartContextProvider>
-                    <BrowserRouter>
-                        <Switch>
-                            {/* home */}
-                            <Route exact path='/' component={() => <Home user={this.state.user} />} />
-                            {/* signup */}
-                            <Route path="/signup" component={Signup} />
-                            {/* login */}
-                            <Route path="/login" component={Login} />
-                            {/* cart products */}
-                            <Route path="/cartproducts" component={() => <Cart user={this.state.user} />} />
-                            {/* add products */}
-                            <Route path="/addproducts" component={AddProducts} />
-                            {/* cashout */}
-                            <Route path='/cashout' component={() => <Cashout user={this.state.user} />} />
-                            <Route component={NotFound} />
-                        </Switch>
-                    </BrowserRouter>
-                </CartContextProvider>
-            </ProductsContextProvider>
-        )
-    }
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="producto/:id" element={<Producto />} />
+      <Route path="perfil" element={<Perfil />} />
+      <Route path="carrito" element={<Carrito />} />
+      <Route path="checkout" element={<Checkout />} />
+      <Route path="login" element={<Login />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
 }
 
-export default App
+export default App;
